@@ -33,10 +33,12 @@ RUN chmod +x /usr/local/bin/docker-wrapper
 RUN curl -fsSLO https://get.docker.com/builds/Linux/x86_64/docker-latest.tgz \
   && tar --strip-components=1 -xvzf docker-latest.tgz -C /usr/local/bin \
   && chmod +x /usr/local/bin/docker \
+  && rm -r docker-latest.tgz \
 # install Rancher CLI
   && curl -fsSLO https://github.com/rancher/cli/releases/download/v0.4.1/rancher-linux-amd64-v0.4.1.tar.gz \
   && tar --strip-components=2 -xzvf rancher-linux-amd64-v0.4.1.tar.gz -C /usr/local/bin \
-  && chmod +x /usr/local/bin/rancher
+  && chmod +x /usr/local/bin/rancher \
+  && rm -f rancher-linux-amd64-v0.4.1.tar.gz
 
 VOLUME /var/lib/docker
 
