@@ -2,16 +2,26 @@ FROM ubuntu:xenial
 
 MAINTAINER Bilal Sheikh <bilal@techtraits.com>
 
-RUN apt-get update && apt-get -y upgrade && apt-get -y install software-properties-common && add-apt-repository ppa:webupd8team/java -y && apt-get update
-
-RUN (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) && apt-get install -y oracle-java8-installer oracle-java8-set-default
+RUN apt-get update \
+  && apt-get -y upgrade \
+  && apt-get -y install software-properties-common \
+# install oracle java 8
+  && add-apt-repository ppa:webupd8team/java -y \
+  && apt-get update \
+  && (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) \
+  && apt-get install -y oracle-java8-installer oracle-java8-set-default \
+# apparmor is required to run docker server within docker container
+  && apt-get update -qq \
+  && apt-get install -qqy wget curl git iptables ca-certificates apparmor \
+# cleanup apt cache
+  && apt-get -y clean \
+  && apt-get -y autoclean \
+  && apt-get -y autoremove \
+  && rm -rf /var/lib/apt/lists/* \
+  && rm /var/cache/oracle-jdk8-installer/*.tar.gz
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 ENV PATH $JAVA_HOME/bin:$PATH
-
-
-# apparmor is required to run docker server within docker container
-RUN apt-get update -qq && apt-get install -qqy wget curl git iptables ca-certificates apparmor
 
 ENV JENKINS_SWARM_VERSION 2.2
 ENV HOME /home/jenkins-slave
